@@ -16,6 +16,7 @@ no_index:
   directory:
     - inc
     - t
+    - modules
 requires:
   Crypt::OpenSSL::RSA: 0.22
   DateTime::Format::Epoch: 0.11
@@ -35,4 +36,4 @@ requires:
   XML::LibXML: 1.64
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.8.2.2.1
+version: 0.8.2.2.3
