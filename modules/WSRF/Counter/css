@@ -1,0 +1,14 @@
+a    {font-family: Verdana, Arial, Helvetica, sans-serif; text-decoration:none}
+a:link    {color: #0000ff}
+a:hover   {text-decoration:underline}
+a:visited {color: #880000}
+
+h1   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 16pt; font-weight: normal; text-decoration:none; color: #62328c}
+h2   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 14pt; font-weight: normal; text-decoration:none; color: #62328c}
+h3   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12pt; font-weight: normal; text-decoration:none; color: #62328c}
+h4   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: normal; text-decoration:none; color: #62328c}
+body {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: normal; text-decoration:none; color: #000000}
+p    {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: normal; text-decoration:none; color: #000000}
+th   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold;   text-decoration:none; color: #000000}
+td   {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: normal; text-decoration:none; color: #000000}
+

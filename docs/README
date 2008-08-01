@@ -1,0 +1,15 @@
+The contents of this directory are as follows:
+
+"Build WS-Resources with WSRF::Lite", gr-wsrflite-a4.pdf,
+an IBM developerWorks tutorial on how to use 
+WSRF::Lite to build WS-Resources. Available online at 
+http://www.ibm.com/developerworks/edu/gr-dw-gr-wsrflite-i.html
+
+"Build secure WS-Resources with WSRF::Lite and WS-Security",
+gr-buildsecure-a4.pdf, an IBM developerWorks tutorial on 
+using WS-Security in WSRF::Lite. Available online at
+http://www.ibm.com/developerworks/edu/gr-dw-gr-buildsecure.html
+
+"Combining AJAX and WSRF for Web-browser based Grid clients",
+wsrfajax.pdf, a paper describing how AJAX was used to create a 
+client for the WSRF::Lite services used in RealityGrid.
