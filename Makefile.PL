@@ -7,7 +7,7 @@
       author   'Mark Mc Keown <Mark.McKeown@manchester.ac.uk>';
       abstract 'Implementation of WSRF';
       license  'perl';
-      version  '0.8.2.2.3';
+      version  '0.8.2.3';
 	
 	# add some requires for modules that dont properly specify dependencies
 	requires 'Params::Validate' 		=> '0.91';
@@ -32,6 +32,10 @@
 	# not windows compatible ...
 	if ( not( $^O =~ /MSWin32|Windows_NT/i ) ) {
 		requires 'Crypt::OpenSSL::X509' 	=> '0.7';
+	} else {
+		print STDOUT "\n\nSorry, but MS Windows is not a suitable platform for asynchronous services.\n" 
+		           . "While, you can still create services, you will not be able to use HTTPS\n"
+		           . "because Crypt::OpenSSL::X509 is not compatible with windows (yet).\n\n";
 	}
 	
 	build_requires 'Test::More'   => '0.42';
