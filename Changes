@@ -2,5 +2,14 @@ Revision history for Perl extension WSRF-Lite.
 
 For previous changes prior to version 0.8.2.3, please read README
 
+0.8.2.4
+	* bug fixes:
+	   - old XPATH expressions didnt work with XML::LibXML; removed the <XPATH ...> elements and left the actual expression
+	   - wrapped some of the canonicalization code in evals so that we dont die everytime an expression doesnt match
+	- added a $WSRF::TIME::EXPIRES_IN variable so that resources dont always expire in 3600 seconds. 
+	
+
 0.8.2.3
-    - 
+    - first cpan release
+    - swapped XML::CanonicalizeXML for XML::LibXML
+    - makefile now downloads missing dependencies

@@ -1,11 +1,11 @@
                   WSRF::Lite
 		  ==========   
  
-WSRF::Lite version 0.8.2.2 by Mark Mc Keown, mark.mckeown@man.ac.uk
+WSRF::Lite version 0.8.2.4 by Mark Mc Keown, mark.mckeown@man.ac.uk
 with contributions from Andrew Porter, Sven van den Berghe, Stephen Pickles,
 Mark Riding, Jonathan Chin, Mary Thompson, Bruno Harbulot,  Mary Thompson,
-Alex Peeters, Bjoern A. Zeeb, Glen Fu, Doug Claar, John Newman and 
-Jamie Vicary.
+Alex Peeters, Bjoern A. Zeeb, Glen Fu, Doug Claar, John Newman, 
+Jamie Vicary and Edward Kawas.
 
 Stefan Zasada (sjzasada@lycos.co.uk) did most of the work implementing 
 WS-Security - a big thanks goes to Savas Parastatidis 
@@ -13,7 +13,7 @@ WS-Security - a big thanks goes to Savas Parastatidis
 .NET.
 
 If you have any problems, bugs, feature requests or questions on 
-WSRF::Lite you can e-mail me at mark.mckeown@manchester.ac.uk.
+WSRF::Lite you can e-mail me at edward.kawas+wsrf@gmail.com.
 There is now a bugzilla for WSRF::Lite at 
 http://kato.mvc.mcc.ac.uk/bugzilla/ and Wiki pages at
 http://kato.mvc.mcc.ac.uk/rss-wiki/WSRFLite.
