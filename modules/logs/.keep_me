@@ -1,3 +1,0 @@
-This file ensures that the otherwise empty logs directory
-is retained when this repository is checked out using
-the '-P' flag.

@@ -2,6 +2,9 @@ Revision history for Perl extension WSRF-Lite.
 
 For previous changes prior to version 0.8.2.3, please read README
 
+0.8.2.5
+    - nothing new (uploaded incorrect version to cpan)
+
 0.8.2.4
 	* bug fixes:
 	   - old XPATH expressions didnt work with XML::LibXML; removed the <XPATH ...> elements and left the actual expression

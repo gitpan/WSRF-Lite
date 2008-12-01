@@ -1,6 +1,5 @@
 build-distribution.sh
 build.xml
-Changes
 client-scripts/README
 client-scripts/sample_WS-Security_client.pl
 client-scripts/ServiceGroup/README
@@ -17,6 +16,7 @@ client-scripts/wsrf_setTerminationTime.pl
 client-scripts/wsrf_updateResourceProperty.pl
 Container.pl
 CPAN_help
+Changes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -34,7 +34,7 @@ lib/WSRF/SSLDaemon.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
-modules/logs/.keep_me
+META.yml
 modules/MultiSession/Counter/Counter.css
 modules/MultiSession/Counter/Counter.js
 modules/MultiSession/Counter/Counter.pm

@@ -7,7 +7,7 @@
       author   'Mark Mc Keown <Mark.McKeown@manchester.ac.uk>';
       abstract 'Implementation of WSRF';
       license  'perl';
-      version  '0.8.2.4';
+      version  '0.8.2.5';
 	
 	# add some requires for modules that dont properly specify dependencies
 	requires 'Params::Validate' 		=> '0.91';
