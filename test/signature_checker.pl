@@ -18,7 +18,7 @@ use Crypt::OpenSSL::RSA;
 #Points to the public key of the X509 certificate
 $ENV{HTTPS_CERT_FILE} = $ENV{HOME}."/.globus/usercert.pem";
 #Points to the provate key of the cert - must be unencrypted
-ENV{HTTPS_KEY_FILE}  = $ENV{HOME}."/.globus/userkey.pem";
+$ENV{HTTPS_KEY_FILE}  = $ENV{HOME}."/.globus/userkey.pem";
 #Tells WSRF::Lite to sign the message with the above cert
 $ENV{WSS_SIGN} = 'true';
 

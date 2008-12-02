@@ -4,7 +4,7 @@
 # WSRF::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# version 0.8.2.4
+# version 0.8.2.5
 # Author:         Mark Mc Keown (mark.mckeown@manchester.ac.uk)
 #
 # Stefan Zasada (sjzasada@lycos.co.uk) did most of the work implementing
@@ -34,7 +34,7 @@ WSRF::Lite - Implementation of the Web Service Resource Framework
 
 =head1 VERSION
 
-This document refers to version 0.8.2.2 of WSRF::Lite released Feb, 2007
+This document refers to version 0.8.2.5 of WSRF::Lite released Dec, 2008
 
 =head1 SYNOPSIS
 
@@ -72,7 +72,7 @@ use strict;
 use vars qw{ $VERSION };
 
 BEGIN {
-	$VERSION = '0.8.2.4';
+	$VERSION = '0.8.2.5';
 }
 
 # WSRF uses WS-Address headers in the SOAP Header - by default
@@ -200,6 +200,8 @@ $WSRF::Constants::WSSE =
 
 #$WSRF::Constants::WSA_ANON = $WSRF::Constants::WSA.'/role/anonymous';
 $WSRF::Constants::WSA_ANON = $WSRF::Constants::WSA . '/anonymous';
+
+$WSRF::Constants::DS = 'http://www.w3.org/2000/09/xmldsig#';
 
 #===============================================================================
 # We override SOAP::SOM to store the raw XML from a SOAP message - this class is
@@ -528,6 +530,7 @@ sub std_envelope {
 				   'xmlns:wsrl' => $WSRF::Constants::WSRL,
 				   'xmlns:wsrp' => $WSRF::Constants::WSRP,
 				   'xmlns:wsu'  => $WSRF::Constants::WSU,
+				   'xmlns:ds'   => $WSRF::Constants::DS,
 				   'xmlns:wsse' => $WSRF::Constants::WSSE
 				 }
 	);
@@ -6122,7 +6125,7 @@ $WSRF::WSS::sec_xpath =
 #	. '">(//. | //@* | //namespace::*)[ancestor-or-self::wsse:BinarySecurityToken]</XPath>';
 
 $WSRF::WSS::si_xpath = 
-#	'<XPath xmlns:ds="http://www.w3.org/2000/09/xmldsig#">(//. | //@* | //namespace::*)[ancestor-or-self::ds:SignedInfo]</XPath>';
+#	'<XPath xmlns:ds="' . $WSRF::Constants::DS . '">(//. | //@* | //namespace::*)[ancestor-or-self::ds:SignedInfo]</XPath>';
 	'(//. | //@* | //namespace::*)[ancestor-or-self::ds:SignedInfo]';
 $WSRF::WSS::timestamp_xpath = 
 #	  '<XPath xmlns:wsu="' 
@@ -6240,12 +6243,13 @@ sub sign {
 	my $header = "";
 
 	my $for_signing =
-	    '<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">'
+	    '<ds:SignedInfo xmlns:ds="' . $WSRF::Constants::DS . '">'
 	  . '<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />'
-	  . '<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>';
+	  . '<ds:SignatureMethod Algorithm="' . $WSRF::Constants::DS . 'rsa-sha1"/>';
 
 	#search through the envelope for things to sign
 	foreach my $key ( keys(%WSRF::WSS::ID_Xpath) ) {
+		next unless (defined $WSRF::WSS::ID_Xpath{$key});
 		$for_signing .=
 		  WSRF::WSS::make_token( $envelope, $WSRF::WSS::ID_Xpath{$key}, $key )
 		  if defined( $WSRF::WSS::Sign{$key} );
@@ -6262,7 +6266,7 @@ sub sign {
 
 	#create a security token using the certificate
 	my $sec_token =
-'<wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="X509Token">'
+'<wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="X509TokenId">'
 	  . $certificate
 	  . '</wsse:BinarySecurityToken>';
 	if (    defined( $WSRF::WSS::Sign{BinarySecurityToken} )
@@ -6270,7 +6274,7 @@ sub sign {
 	{
 		$for_signing .=
 		  WSRF::WSS::make_token( $sec_token, $WSRF::WSS::sec_xpath,
-								 "X509Token" );
+								 "X509TokenId" );
 	}
 
 	#create a timestamp
@@ -6315,12 +6319,12 @@ sub sign {
 '<wsse:Security xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" 
 xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">'
 	  . $sec_token . "\n"
-	  . '<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	  . '<ds:Signature xmlns:ds="' . $WSRF::Constants::DS . '">
 ' . $can_signed_info . '
 <ds:SignatureValue> 
 ' . $signature . '</ds:SignatureValue>
 <ds:KeyInfo>' . '<wsse:SecurityTokenReference>
-<wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#X509Token"/>
+<wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#X509TokenId"/>
 </wsse:SecurityTokenReference>
 </ds:KeyInfo>
 </ds:Signature>';
@@ -6368,10 +6372,10 @@ sub make_token {
 
 	return '<ds:Reference URI="#' . $ID . '">'
 	  . '<ds:Transforms>'
-	  . '<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">'
-	  . '</ds:Transform>'
+	  . '<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>'
+	  #. '</ds:Transform>'
 	  . '</ds:Transforms>'
-	  . '<ds:DigestMethod Algorithm= "http://www.w3.org/2000/09/xmldsig#sha1"/>'
+	  . '<ds:DigestMethod Algorithm= "' . $WSRF::Constants::DS . 'sha1"/>'
 	  . '<ds:DigestValue>'
 	  . $token_digest
 	  . '</ds:DigestValue>'
@@ -6433,8 +6437,9 @@ sub verify {
 		"/Envelope/Header/Security/{$WSRF::Constants::WSSE}BinarySecurityToken")
 	  : die "WSRF::WSS::verify Fault - No Security Token in SOAP Header\n";
 
+    $Token =~ s/\s+$//;
 	$Token =
-	  "-----BEGIN CERTIFICATE-----\n" . $Token . "-----END CERTIFICATE-----";
+	  "-----BEGIN CERTIFICATE-----\n" . $Token . "\n-----END CERTIFICATE-----";
 
 	#   print ">>>>Token>>>\n$Token\n<<<<Token<<<<<\n";
 
@@ -6454,9 +6459,9 @@ sub verify {
 	#get the Signature value
 	my $SignatureValue =
 	  $envelope->match(
-		 "/Envelope/Header//{http://www.w3.org/2000/09/xmldsig#}SignatureValue")
+		 "/Envelope/Header//{$WSRF::Constants::DS}SignatureValue")
 	  ? $envelope->valueof(
-		 "/Envelope/Header//{http://www.w3.org/2000/09/xmldsig#}SignatureValue")
+		 "/Envelope/Header//{$WSRF::Constants::DS}SignatureValue")
 	  : die "WSRF::WSS::verify Fault - No Signature Value in SOAP Header\n";
 
 	$SignatureValue = MIME::Base64::decode($SignatureValue);
@@ -6483,10 +6488,10 @@ sub verify {
 			my $name        = $attr->{URI};
 			my $DigestValue =
 			  $envelope->match(
-"/Envelope/Header/Security/Signature/SignedInfo/[$i]//{http://www.w3.org/2000/09/xmldsig#}DigestValue"
+"/Envelope/Header/Security/Signature/SignedInfo/[$i]//{$WSRF::Constants::DS}DigestValue"
 			  )
 			  ? $envelope->valueof(
-"/Envelope/Header/Security/Signature/SignedInfo/[$i]//{http://www.w3.org/2000/09/xmldsig#}DigestValue"
+"/Envelope/Header/Security/Signature/SignedInfo/[$i]//{$WSRF::Constants::DS}DigestValue"
 			  )
 			  : die "WSRF::WSS::verify No DigestValue for $name";
 
