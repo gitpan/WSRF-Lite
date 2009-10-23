@@ -1,10 +1,10 @@
 # ==============================================================================
 #
-# Copyright (C) 2000-2003 University of Manchester
+# Copyright (C) 2000-2008 University of Manchester 
 # WSRF::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# version 0.8.2.5
+# version 0.8.2.7
 # Author:         Mark Mc Keown (mark.mckeown@manchester.ac.uk)
 #
 # Stefan Zasada (sjzasada@lycos.co.uk) did most of the work implementing
@@ -34,7 +34,7 @@ WSRF::Lite - Implementation of the Web Service Resource Framework
 
 =head1 VERSION
 
-This document refers to version 0.8.2.5 of WSRF::Lite released Dec, 2008
+This document refers to version 0.8.2.7 of WSRF::Lite released Dec, 2008
 
 =head1 SYNOPSIS
 
@@ -72,7 +72,7 @@ use strict;
 use vars qw{ $VERSION };
 
 BEGIN {
-	$VERSION = '0.8.2.5';
+	$VERSION = '0.8.2.7';
 }
 
 # WSRF uses WS-Address headers in the SOAP Header - by default
@@ -488,10 +488,10 @@ sub old_envelope {
 					? SOAP::Data->name(
 						   SOAP::Utils::qualify( $self->envprefix => 'Body' ) =>
 							 \$body
-					  )->attr( { 'wsu:Id' => 'myBody' } )
+					  )->attr( { 'wsu:Id' => $WSRF::WSS::ID{myBody}  } )
 					: SOAP::Data->name(
 							  SOAP::Utils::qualify( $self->envprefix => 'Body' )
-					  )->attr( { 'wsu:Id' => 'myBody' } )
+					  )->attr( { 'wsu:Id' => $WSRF::WSS::ID{myBody}  } )
 				  ),
 				)
 			)->attr( $self->attr )
@@ -660,10 +660,10 @@ sub std_envelope {
 					? SOAP::Data->name(
 						   SOAP::Utils::qualify( $self->envprefix => 'Body' ) =>
 							 \$body
-					  )->attr( { 'wsu:Id' => 'myBody' } )
+					  )->attr( { 'wsu:Id' => $WSRF::WSS::ID{myBody}  } )
 					: SOAP::Data->name(
 							  SOAP::Utils::qualify( $self->envprefix => 'Body' )
-					  )->attr( { 'wsu:Id' => 'myBody' } )
+					  )->attr( { 'wsu:Id' => $WSRF::WSS::ID{myBody}  } )
 				  ),
 				)
 			)->attr( $self->attr )
@@ -5901,7 +5901,7 @@ sub BEGIN {
 	for my $method (
 		qw(autotype readable envprefix encodingStyle
 		encprefix multirefinplace encoding typelookup uri
-		header maptype xmlschema use_prefix)
+		header maptype xmlschema use_prefix ns default_ns)
 	  )
 	{
 		*$method = sub {
@@ -6102,6 +6102,12 @@ WS-Security specification.
 
 =cut
 
+%WSRF::WSS::ID = (); 
+$WSRF::WSS::ID{X509Token} = "X509Token-" . time(); 
+$WSRF::WSS::ID{TimeStamp} = "TimeStamp-" . time(); 
+$WSRF::WSS::ID{myBody} = "myBody-" . time(); 
+
+
 %WSRF::WSS::Sign                      = ();
 $WSRF::WSS::Sign{BinarySecurityToken} = 1;
 $WSRF::WSS::Sign{Timestamp}           = 1;
@@ -6261,12 +6267,12 @@ sub sign {
 	}
 
 	$for_signing .=
-	  WSRF::WSS::make_token( $envelope, $WSRF::WSS::body_xpath, "myBody" )
+	  WSRF::WSS::make_token( $envelope, $WSRF::WSS::body_xpath, $WSRF::WSS::ID{myBody}  )
 	  if defined( $WSRF::WSS::Sign{Body} );
 
 	#create a security token using the certificate
 	my $sec_token =
-'<wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="X509TokenId">'
+'<wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="' . $WSRF::WSS::ID{X509Token} . '">'
 	  . $certificate
 	  . '</wsse:BinarySecurityToken>';
 	if (    defined( $WSRF::WSS::Sign{BinarySecurityToken} )
@@ -6274,14 +6280,14 @@ sub sign {
 	{
 		$for_signing .=
 		  WSRF::WSS::make_token( $sec_token, $WSRF::WSS::sec_xpath,
-								 "X509TokenId" );
+								 $WSRF::WSS::ID{X509Token} );
 	}
 
 	#create a timestamp
 	my $timestamp = '';
 	if ( defined($WSRF::WSS::timestamp_xpath) ) {
 		$timestamp =
-'<wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="TimeStamp">';
+'<wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="' . $WSRF::WSS::ID{TimeStamp} . '">';
 		$timestamp .=
 		    '<wsu:Created>'
 		  . WSRF::Time::ConvertEpochTimeToString(time)
@@ -6298,7 +6304,7 @@ sub sign {
 		#canonicalize,digest + Base64 the timestamp
 		$for_signing .=
 		  WSRF::WSS::make_token( $timestamp, $WSRF::WSS::timestamp_xpath,
-								 "TimeStamp" )
+								 $WSRF::WSS::ID{TimeStamp} )
 		  if defined( $WSRF::WSS::Sign{Timestamp} );
 	}
 
@@ -6309,7 +6315,7 @@ sub sign {
 	my $can_signed_info = $doc->toStringEC14N( 0, $WSRF::WSS::si_xpath, [''] );
 
 #   print ">>>can_signed>>>>".MIME::Base64::encode(sha1($can_signed_info))."<<<<<can_aigned<<<<<\n";
-#   print ">>>can_signed>>>>\n".$can_signed_info."\n<<<<<can_aigned<<<<<\n";
+#   print ">>>can_signed_info>>>>\n$can_signed_info\n<<<<<can_signed_info<<<<<\n";
 
 	my $rsa_priv  = WSRF::WSS::load_priv_key();
 	my $signature = $rsa_priv->sign($can_signed_info);
@@ -6319,15 +6325,12 @@ sub sign {
 '<wsse:Security xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" 
 xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">'
 	  . $sec_token . "\n"
-	  . '<ds:Signature xmlns:ds="' . $WSRF::Constants::DS . '">
-' . $can_signed_info . '
-<ds:SignatureValue> 
-' . $signature . '</ds:SignatureValue>
-<ds:KeyInfo>' . '<wsse:SecurityTokenReference>
-<wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#X509TokenId"/>
-</wsse:SecurityTokenReference>
-</ds:KeyInfo>
-</ds:Signature>';
+	  . '<ds:Signature xmlns:ds="' . $WSRF::Constants::DS . '">' 
+	  . $can_signed_info . '<ds:SignatureValue>' 
+	  . $signature . '</ds:SignatureValue><ds:KeyInfo>' 
+      . '<wsse:SecurityTokenReference><wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#' 
+      . $WSRF::WSS::ID{X509Token}  
+      . '"/></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature>';
 
 	if ( defined($WSRF::WSS::timestamp_xpath) ) {
 		$extraheader .= $timestamp;
@@ -6337,7 +6340,9 @@ xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-s
 
 	$doc = $parser->parse_string($envelope);
 	my $Body = $doc->toStringEC14N( 0, $WSRF::WSS::body_xpath, [''] );
-
+	#my $Body = $doc->toStringC14N(0,$WSRF::WSS::body_xpath);
+	
+	#print ">>>header newline body>>>>\n$header\n\n$Body\n<<<<<header newline body<<<<<\n";
 	return $header, $Body;
 }
 

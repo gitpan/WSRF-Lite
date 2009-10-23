@@ -2,6 +2,16 @@ Revision history for Perl extension WSRF-Lite.
 
 For previous changes prior to version 0.8.2.3, please read README
 
+0.8.2.7
+	- updated the copyright
+    - made the ws:id for X509Token, TimeStamp and myBody unique 
+      across messages (thanks Alex Peeters)
+    - sorry about the jump in version numbers for Lite.pm, but I
+      needed to make the version of Lite.pm correspond to the 
+      version of the package WSRF-Lite.
+    - add ns() and default_ns() to Lite (since use_prefix is
+      deprecated in new versions of SOAP::Lite).
+
 0.8.2.6
   * bug fixes:
     - WSRF now compatible with BEA's weblogic - basically weblogic didnt
