@@ -4,7 +4,7 @@
 # WSRF::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# version 0.8.2.7
+# version 0.8.2.9
 # Author:         Mark Mc Keown (mark.mckeown@manchester.ac.uk)
 #
 # Stefan Zasada (sjzasada@lycos.co.uk) did most of the work implementing
@@ -72,7 +72,7 @@ use strict;
 use vars qw{ $VERSION };
 
 BEGIN {
-	$VERSION = '0.8.2.8';
+	$VERSION = '0.8.2.9';
 }
 
 # WSRF uses WS-Address headers in the SOAP Header - by default

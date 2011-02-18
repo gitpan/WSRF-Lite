@@ -35,26 +35,6 @@ LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.yml
-modules/MultiSession/Counter/Counter.css
-modules/MultiSession/Counter/Counter.js
-modules/MultiSession/Counter/Counter.pm
-modules/MultiSession/Counter/Counter.WSDL
-modules/MultiSession/Counter/Counter.xsl
-modules/Session/Counter/Counter.css
-modules/Session/Counter/Counter.js
-modules/Session/Counter/Counter.pm
-modules/Session/Counter/Counter.WSDL
-modules/Session/Counter/Counter.xsl
-modules/Session/CounterFactory/CounterFactory.pm
-modules/Session/LB3D/lb3d.pm
-modules/Session/myServiceGroup/myServiceGroup.pm
-modules/Session/ServiceGroupEntry/ServiceGroupEntry.pm
-modules/WSRF/Counter/Counter.css
-modules/WSRF/Counter/Counter.js
-modules/WSRF/Counter/Counter.pm
-modules/WSRF/Counter/Counter.WSDL
-modules/WSRF/Counter/Counter.xsl
-modules/WSRF/Counter/css
 preForkContainer.pl
 README
 SContainer.pl
@@ -64,4 +44,5 @@ test/README
 test/signature_checker.pl
 test/TestingCanOnlyProveTheExistenceOfBugs
 test/wsrftest.pl
+modules.tar.gz
 TODO

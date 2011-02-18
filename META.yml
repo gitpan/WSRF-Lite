@@ -23,17 +23,6 @@ no_index:
     - t
     - test
   installer.pl: []
-  modules: []
-  modules/MultiSession: []
-  modules/MultiSession/Counter/Counter.pm: []
-  modules/Session: []
-  modules/Session/Counter/Counter.pm: []
-  modules/Session/CounterFactory/CounterFactory.pm: []
-  modules/Session/LB3D/lb3d.pm: []
-  modules/Session/ServiceGroupEntry/ServiceGroupEntry.pm: []
-  modules/Session/myServiceGroup/myServiceGroup.pm: []
-  modules/WSRF: []
-  modules/logs: []
   preForkContainer.pl: []
   test: []
 requires:
@@ -55,4 +44,4 @@ requires:
   XML::LibXML: 1.64
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.8.2.8
+version: 0.8.2.9
