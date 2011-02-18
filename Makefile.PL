@@ -7,7 +7,7 @@
       author   'Mark Mc Keown <Mark.McKeown@manchester.ac.uk>';
       abstract 'Implementation of WSRF';
       license  'perl';
-      version  '0.8.2.7';
+      version  '0.8.2.8';
 	
 	# add some requires for modules that dont properly specify dependencies
 	requires 'Params::Validate' 		=> '0.91';
@@ -41,9 +41,23 @@
 	build_requires 'Test::More'   => '0.42';
 	build_requires 'Test::Simple' => '0.44';
 
+    no_index       'Container.pl';
+    no_index       'preForkContainer.pl';
+    no_index       'SContainer.pl';
+    no_index       'installer.pl';
     no_index       'modules';
+    no_index       'modules/logs';
+    no_index       'modules/MultiSession';
+    no_index       'modules/Session';
+    no_index       'modules/WSRF';
+    no_index       'modules/MultiSession/Counter/Counter.pm';
+    no_index       'modules/Session/Counter/Counter.pm';
+    no_index       'modules/Session/CounterFactory/CounterFactory.pm';
+    no_index       'modules/Session/LB3D/lb3d.pm';
+    no_index       'modules/Session/myServiceGroup/myServiceGroup.pm';
+    no_index       'modules/Session/ServiceGroupEntry/ServiceGroupEntry.pm';
     #no_index       'client-scripts';
-    #no_index       'test';
+    no_index       'test';
 	auto_install;
 	WriteAll;
 

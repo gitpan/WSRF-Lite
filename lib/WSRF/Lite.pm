@@ -34,7 +34,7 @@ WSRF::Lite - Implementation of the Web Service Resource Framework
 
 =head1 VERSION
 
-This document refers to version 0.8.2.7 of WSRF::Lite released Dec, 2008
+This document refers to version 0.8.2.8 of WSRF::Lite released Feb, 2011
 
 =head1 SYNOPSIS
 
@@ -72,7 +72,7 @@ use strict;
 use vars qw{ $VERSION };
 
 BEGIN {
-	$VERSION = '0.8.2.7';
+	$VERSION = '0.8.2.8';
 }
 
 # WSRF uses WS-Address headers in the SOAP Header - by default
@@ -6341,7 +6341,7 @@ xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-s
 	$doc = $parser->parse_string($envelope);
 	my $Body = $doc->toStringEC14N( 0, $WSRF::WSS::body_xpath, [''] );
 	#my $Body = $doc->toStringC14N(0,$WSRF::WSS::body_xpath);
-	
+	#$Body = MIME::Base64::encode($rsa_priv->sign($Body));
 	#print ">>>header newline body>>>>\n$header\n\n$Body\n<<<<<header newline body<<<<<\n";
 	return $header, $Body;
 }
@@ -6356,15 +6356,15 @@ sub make_token {
 	eval { require MIME::Base64 };
 	die "Failed to access class MIME::Base64: $@" if $@;
 
-	#   print STDERR "make_token $ID\n";
-	#   print STDERR "Xpath=> $Path\n";
+	#   print "make_token $ID\n";
+	#   print "Xpath=> $Path\n";
 	my $parser    = XML::LibXML->new();
 	my $doc       = $parser->parse_string($XML);
 	my $can_token = undef;
 	eval {$can_token = $doc->toStringEC14N( 0, $Path, [''] );};
 	return '' unless $can_token;
 
-	#print STDERR ">>>token-$ID>>>\n$can_token\n<<<token-$ID<<<<\n";
+#	print ">>>token-$ID>>>\n$can_token\n<<<token-$ID<<<<\n";
 
 	#take digest of token
 	my $token_digest = Digest::SHA1::sha1($can_token);
@@ -6373,7 +6373,7 @@ sub make_token {
 	$token_digest = MIME::Base64::encode($token_digest);
 	chomp($token_digest);
 
-#print STDERR ">>>>token-$ID-digest>>>".$token_digest."<<<token-$ID-digest<<<<\n";
+#print ">>>>token-$ID-digest>>>".$token_digest."<<<token-$ID-digest<<<<\n";
 
 	return '<ds:Reference URI="#' . $ID . '">'
 	  . '<ds:Transforms>'
@@ -6535,7 +6535,7 @@ sub verify {
 		chomp($token_digest);
 		if ( $SignedStuff{ $Signed{$key} } eq $token_digest ) {
 
-			#print STDERR "WSRF::WSS::verify Message \"$key\" is signed\n";
+			#print "WSRF::WSS::verify Message \"$key\" is signed\n";
 			$results{PartsSigned}{$key} = 'true';
 		} else {
 			die "WSRF::WSS::verify $key digest hashs do not match\n";
