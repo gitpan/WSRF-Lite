@@ -27,6 +27,7 @@ no_index:
   test: []
 requires:
   Crypt::OpenSSL::RSA: 0.22
+  Crypt::OpenSSL::X509: 1.7
   DateTime::Format::Epoch: 0.11
   DateTime::Format::W3CDTF: 0.04
   DateTime::Locale: 0.41
@@ -34,7 +35,6 @@ requires:
   Digest::SHA1: 2.11
   HTTP::Daemon: 1.39
   HTTP::Daemon::SSL: 1.04
-  IO::Socket::SSL: 1.08
   List::MoreUtils: 0.22
   MIME::Base64: 3.07
   Params::Validate: 0.91
@@ -44,4 +44,4 @@ requires:
   XML::LibXML: 1.64
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.8.2.9
+version: 0.8.3.0

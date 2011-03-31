@@ -44,5 +44,5 @@ test/README
 test/signature_checker.pl
 test/TestingCanOnlyProveTheExistenceOfBugs
 test/wsrftest.pl
-modules.tar.gz
+modules.tar
 TODO

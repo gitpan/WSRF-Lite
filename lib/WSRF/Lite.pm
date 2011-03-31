@@ -4,7 +4,7 @@
 # WSRF::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# version 0.8.2.9
+# version 0.8.2.7
 # Author:         Mark Mc Keown (mark.mckeown@manchester.ac.uk)
 #
 # Stefan Zasada (sjzasada@lycos.co.uk) did most of the work implementing
@@ -34,7 +34,7 @@ WSRF::Lite - Implementation of the Web Service Resource Framework
 
 =head1 VERSION
 
-This document refers to version 0.8.2.8 of WSRF::Lite released Feb, 2011
+This document refers to version 0.8.3.0 of WSRF::Lite released March, 2011
 
 =head1 SYNOPSIS
 
@@ -72,7 +72,7 @@ use strict;
 use vars qw{ $VERSION };
 
 BEGIN {
-	$VERSION = '0.8.2.9';
+	$VERSION = '0.8.3.0';
 }
 
 # WSRF uses WS-Address headers in the SOAP Header - by default
@@ -6027,7 +6027,7 @@ sub call {
 
 	#BUG fix by Luke AT yahoo.com
 	#return $response if $self->outputxml;
-	if ( $self->outputxml ) { $self->destroy_context(); return $response; }
+	# if ( $self->outputxml ) { $self->destroy_context(); return $response; }
 
 	# deserialize and store result
 	my $result = $self->{'_call'} =
@@ -6076,7 +6076,12 @@ sub call {
 		}
 	}
 	$self->destroy_context();
-	return $result;
+
+    if ( $self->outputxml ) {
+      return ($result, $response);
+    } else {
+	  return $result;
+    }
 }    # end of call()
 
 # ======================================================================
@@ -6102,11 +6107,16 @@ WS-Security specification.
 
 =cut
 
+%WSRF::WSS::ASNMTAP = ();
+$WSRF::WSS::ASNMTAP{UsernameToken}    = undef;
+$WSRF::WSS::ASNMTAP{SAML}             = undef;
+$WSRF::WSS::ASNMTAP{Assertion}        = undef;
+$WSRF::WSS::ASNMTAP{SAMLAssertionID}  = undef;
+
 %WSRF::WSS::ID = (); 
 $WSRF::WSS::ID{X509Token} = "X509Token-" . time(); 
 $WSRF::WSS::ID{TimeStamp} = "TimeStamp-" . time(); 
 $WSRF::WSS::ID{myBody} = "myBody-" . time(); 
-
 
 %WSRF::WSS::Sign                      = ();
 $WSRF::WSS::Sign{BinarySecurityToken} = 1;
@@ -6321,6 +6331,14 @@ sub sign {
 	my $signature = $rsa_priv->sign($can_signed_info);
 	$signature = MIME::Base64::encode($signature);
 
+  my $sec_token_reference = '<wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#' . $WSRF::WSS::ID{X509Token} . '"/>';
+
+  if ( defined $WSRF::WSS::ASNMTAP{Assertion} and $WSRF::WSS::ASNMTAP{SAMLAssertionID} ) {
+    $sec_token = $WSRF::WSS::ASNMTAP{Assertion};
+    $WSRF::WSS::ASNMTAP{Assertion} =~ $WSRF::WSS::ASNMTAP{SAMLAssertionID};
+    $sec_token_reference = '<wsse:KeyIdentifier  ValueType="http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.0#SAMLAssertionID">' . ( defined $1 ? $1 : '?' ) . '</wsse:KeyIdentifier>';
+  }
+
 	my $extraheader =
 '<wsse:Security xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" 
 xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">'
@@ -6328,20 +6346,23 @@ xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-s
 	  . '<ds:Signature xmlns:ds="' . $WSRF::Constants::DS . '">' 
 	  . $can_signed_info . '<ds:SignatureValue>' 
 	  . $signature . '</ds:SignatureValue><ds:KeyInfo>' 
-      . '<wsse:SecurityTokenReference><wsse:Reference  ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" URI="#' 
-      . $WSRF::WSS::ID{X509Token}  
-      . '"/></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature>';
+    . '<wsse:SecurityTokenReference>' . $sec_token_reference . '</wsse:SecurityTokenReference>'
+    . '</ds:KeyInfo></ds:Signature>';
 
-	if ( defined($WSRF::WSS::timestamp_xpath) ) {
+	$extraheader .= $WSRF::WSS::ASNMTAP{UsernameToken} if ( $WSRF::WSS::ASNMTAP{UsernameToken} );
+
+	  if ( defined($WSRF::WSS::timestamp_xpath) ) {
 		$extraheader .= $timestamp;
 	}
 	$extraheader .= '</wsse:Security>';
 	$header = $extraheader . $header;
 
 	$doc = $parser->parse_string($envelope);
-	my $Body = $doc->toStringEC14N( 0, $WSRF::WSS::body_xpath, [''] );
+  my $Body = $doc->toStringEC14N( 0, $WSRF::WSS::body_xpath, ((defined $WSRF::WSS::ASNMTAP{SAML}) ? ['saml', 'samlp'] : ['']));
+	# TODO: replace ['saml', 'samlp'] with the array created from the content of $WSRF::WSS::ASNMTAP{SAML}!!!
+	#my $Body = $doc->toStringEC14N( 0, $WSRF::WSS::body_xpath, [''] );
 	#my $Body = $doc->toStringC14N(0,$WSRF::WSS::body_xpath);
-	#$Body = MIME::Base64::encode($rsa_priv->sign($Body));
+	
 	#print ">>>header newline body>>>>\n$header\n\n$Body\n<<<<<header newline body<<<<<\n";
 	return $header, $Body;
 }
